@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 import Navbar from "@/components/Navbar";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body
         className={`
           ${geistSans.variable}
@@ -36,12 +38,22 @@ export default function RootLayout({
           bg-white
         `}
       >
+
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="afterInteractive"
+        />
+
         <Navbar />
 
         <Toaster position="top-right" />
 
-        <main className="pt-24">{children}</main>
+        <main className="pt-24">
+          {children}
+        </main>
+
       </body>
+
     </html>
   );
 }

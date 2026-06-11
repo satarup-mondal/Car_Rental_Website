@@ -8,6 +8,13 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+
 export default function BookingPage(){
 
 
@@ -44,6 +51,69 @@ try{
 
 
 setLoading(true);
+
+
+
+// razorpay order create
+
+const orderRes = await fetch("/api/payment/create-order",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+amount:2000
+
+})
+
+});
+
+
+
+const orderData = await orderRes.json();
+
+
+
+if(!orderData.success){
+
+alert("Payment failed");
+
+return;
+
+}
+
+
+
+
+const options = {
+
+
+key:process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+
+
+amount:orderData.order.amount,
+
+
+currency:"INR",
+
+
+name:"Car Rental",
+
+
+description:"Car Booking Payment",
+
+
+order_id:orderData.order.id,
+
+
+
+handler:async function(){
 
 
 
@@ -91,9 +161,6 @@ pickupDate:pickup,
 returnDate:returnDate,
 
 
-// temporary price
-// later car price se calculate karenge
-
 totalPrice:2000
 
 
@@ -127,12 +194,29 @@ return;
 
 
 
-alert("Booking Confirmed 🚗");
+alert("Payment Done & Booking Confirmed 🚗");
 
-
-// booking ke baad redirect
 
 router.push("/my-bookings");
+
+
+
+}
+
+
+};
+
+
+
+
+
+const razorpay =
+new window.Razorpay(options);
+
+
+razorpay.open();
+
+
 
 
 
@@ -374,7 +458,7 @@ transition
 {
 loading
 ?
-"Booking..."
+"Processing..."
 :
 "Confirm Booking"
 }
